@@ -23,3 +23,33 @@ export const getDeleteArticle = (articleId) => {
         url: `/mp/v1_0/articles/${articleId}`
     })
 }
+
+/* 发布文章请求  */
+export const publishArticle = (data, draft = false) => {
+    return request({
+        method: 'post',
+        url: '/mp/v1_0/articles',
+        params: {
+            draft
+        },
+        data
+    })
+}
+/* 获取指定文章请求 */
+export const getTargetArticle = (articleId) => {
+    return request({
+        method: 'get',
+        url: `/mp/v1_0/articles/${articleId}`
+    })
+}
+/* 编辑修改文章请求 */
+export const getEditArticle = (articleId,data,draft = false) => {
+    return request({
+        method: 'put',
+        url: `/mp/v1_0/articles/${articleId}`,
+        params: {
+            draft
+        },
+        data
+    })
+}

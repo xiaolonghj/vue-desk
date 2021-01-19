@@ -23,13 +23,13 @@
             <i class="el-icon-document"></i>
             <span slot="title">内容管理</span>
           </el-menu-item>
-          <el-menu-item index="/image">
-            <i class="el-icon-setting"></i>
-            <span slot="title">素材管理</span>
-          </el-menu-item>
           <el-menu-item index="/publish">
             <i class="el-icon-setting"></i>
             <span slot="title">发布文章</span>
+          </el-menu-item>
+          <el-menu-item index="/image">
+            <i class="el-icon-setting"></i>
+            <span slot="title">素材管理</span>
           </el-menu-item>
           <el-menu-item index="/comment">
             <i class="el-icon-document"></i>

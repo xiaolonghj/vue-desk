@@ -65,7 +65,17 @@
         class="mt15"
       >
         <el-table-column label="序号" type="index" width="60"></el-table-column>
-        <el-table-column prop="cover" label="封面" width="150"></el-table-column>
+        <el-table-column prop="cover" label="封面" width="150">
+          <template slot-scope="scope">
+            <img
+              :src="scope.row.cover.images[0]"
+              alt
+              v-if="scope.row.cover.images[0]"
+              class="cover-img"
+            />
+            <img src="@/assets/images/pic_bg.png" alt v-else class="cover-img" />
+          </template>
+        </el-table-column>
         <el-table-column prop="title" label="标题"></el-table-column>
         <el-table-column prop="status" label="状态" width="200">
           <template slot-scope="scope">
@@ -79,7 +89,13 @@
         <el-table-column prop="pubdate" label="发布时间" width="250"></el-table-column>
         <el-table-column label="操作" width="150">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" circle></el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              circle
+              @click="editArtilce(scope.row.id)"
+            ></el-button>
             <el-button
               type="danger"
               icon="el-icon-delete"
@@ -102,12 +118,58 @@
         class="mt15 tr"
       ></el-pagination>
     </el-card>
+    <!-- 编辑文章列表弹窗 -->
+    <el-dialog title="编辑文章" :visible.sync="editDialogVisible" width="50%">
+      <el-form
+        :model="editRuleForm"
+        :rules="editRules"
+        ref="editRuleForm"
+        label-width="60px"
+        
+        class="demo-ruleForm"
+      >
+        <el-form-item label="标题" prop="title">
+          <el-input v-model="editRuleForm.title"></el-input>
+        </el-form-item>
+        <el-form-item label="内容" prop="content">
+          <quill-editor ref="myTextEditor" v-model="editRuleForm.content"></quill-editor>
+        </el-form-item>
+        <el-form-item label="封面">
+          <el-radio-group v-model="editRuleForm.cover.type">
+            <el-radio :label="1">单图</el-radio>
+            <el-radio :label="3">三图</el-radio>
+            <el-radio :label="0">无图</el-radio>
+            <el-radio :label="-1">自动</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="频道">
+          <el-select v-model="editRuleForm.channel_id" placeholder="请选择活动区域">
+            <el-option
+              v-for="(item,index) in channels"
+              :key="item.index"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editArtilceBtn(editRuleForm.id)">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 
 <script>
-import { getArticles, getChannels, getDeleteArticle } from "@/api/article";
+import {
+  getArticles,
+  getChannels,
+  getDeleteArticle,
+  getTargetArticle,
+  getEditArticle,
+} from "@/api/article";
 export default {
   data() {
     return {
@@ -127,6 +189,23 @@ export default {
       end_pubdate: null,
       //加载动画属性
       loading: true,
+      //获取频道
+      channels: [],
+      //编辑文章当前数据
+      editRuleForm: {
+        title: "",
+        channel_id: null,
+        content: "",
+        cover: {
+          type: null,
+          images: [],
+        },
+      },
+      editDialogVisible: false,
+      editRules: {
+        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+        content: [{ required: true, message: "请输入内容", trigger: "blur" }],
+      },
     };
   },
   created() {
@@ -193,7 +272,7 @@ export default {
               this.getArticlesList(this.page);
             })
             .catch((err) => {
-              console.log(err)
+              console.log(err);
             });
         })
         .catch(() => {
@@ -203,9 +282,46 @@ export default {
           });
         });
     },
+    //获取指定文章
+    editArtilce(articleId) {
+      this.editDialogVisible = true;
+      getChannels()
+        .then((res) => {
+          this.channels = res.data.data.channels;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      getTargetArticle(articleId)
+        .then((res) => {
+          this.editRuleForm = res.data.data;
+        })
+        .catch((errr) => {
+          console.log(err);
+        });
+    },
+    //修改指定文章列表
+    editArtilceBtn(articleId) {
+      this.$refs.editRuleForm.validate((valid) => {
+        if (!valid) return this.$message.error("请输入必填项");
+        this.editDialogVisible = false;
+        getEditArticle(articleId, this.editRuleForm)
+          .then((res) => {
+            console.log(res);
+            this.getArticlesList();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+    },
   },
 };
 </script>
 
 <style lang="less" scoped>
+.cover-img {
+  width: 60px;
+  height: 60px;
+}
 </style>
