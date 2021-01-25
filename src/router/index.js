@@ -5,6 +5,10 @@ import Layout from '@/components/layout/layout'
 import Home from '@/views/home/home'
 import Article from '@/views/article/article'
 import Publish from '@/views/publish/publish'
+import Image from '@/views/image/image'
+import Comment from '@/views/comment/comment'
+import Settings from '@/views/settings/settings'
+import Fans from '@/views/fans/fans'
 
 
 Vue.use(VueRouter)
@@ -51,6 +55,26 @@ const routes = [
         path: '/publish',
         name: 'Publish',
         component: Publish
+      },
+      {
+        path: '/image',
+        name: 'Image',
+        component: Image
+      },
+      {
+        path: '/comment',
+        name: 'Comment',
+        component: Comment
+      },
+      {
+        path: '/settings',
+        name: 'Settings',
+        component: Settings
+      },
+      {
+        path: '/fans',
+        name: 'Fans',
+        component: Fans
       }
     ]
   }

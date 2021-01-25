@@ -6,7 +6,7 @@
           <img src="@/assets/images/logo_admin.png" alt srcset />
         </div>
         <el-menu
-          default-active="/home"
+          :default-active="$route.path"
           class="el-menu-vertical-demo"
           background-color="#001e34"
           text-color="#fff"
@@ -74,6 +74,8 @@
 
 <script>
 import { getUserProfile } from "@/api/user";
+import globalBus from "@/utils/global-bus";
+
 export default {
   data() {
     return {
@@ -92,6 +94,10 @@ export default {
   },
   created() {
     this.loadUserProfile();
+    //注册全局总线更新用户信息
+    globalBus.$on("update-user", (data) => {
+      this.userProfile.name = data.name;
+    });
   },
   methods: {
     handleCollapse() {
